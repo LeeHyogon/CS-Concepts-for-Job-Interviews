@@ -16,3 +16,4 @@
 - Modify: 파일 내용 수정
 - Delete: 파일 삭제
 - Style: 파일 스타일 변경(공백, 열, Intent 등)
+- Branch: 브랜치 추가, 수정, 삭제
