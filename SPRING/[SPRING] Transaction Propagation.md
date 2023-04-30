@@ -7,7 +7,7 @@
 ## PROPAGATION_REQUIRED
 
 - Outer transaction과 inner transaction을 physical 상으로 하나의 트랜잭션으로 처리하는 옵션
-- 이미 존재하는 transaction(outer transaction)이 존재할 경우 해당 transaction에 참여시킴
+- 이미 transaction(outer transaction)이 존재할 경우 해당 transaction에 참여시킴
   - 이 경우, inner transaction은 outer transaction의 격리레벨, timeout, read-only 플래그 값이 적용됨
 - inner transaction에서 롤백이 발생하였을 때 outer transaction도 함께 롤백
 - @Transactional의 기본값
@@ -46,6 +46,18 @@ return createNewTransaction();
 - 하나의 physical transaction과 다수의 save point(롤백으로 되돌아 갈 수 있는 지점)를 사용
 - save point를 지정할 수 있는 특정 db(oracle)에서만 지원되는 옵션
 - inner transaction의 롤백은 save point를 남기는 기능을 통해 이루어짐
+- pseudo-code
+```java
+if (!isNestedTransactionAllowed()) {
+    throw Exception();
+} else {
+    if (useSavepointForNestedTransaction()) {
+        createAndHoldSavepoint();
+    } else {
+        return createNewTransaction();
+    }
+}
+```
 
 ## 그 외
 - MANDATORY : 이미 진행중인 transaction(outer transaction)에 합류시킴. outer transaction이 없을 경우 예외 발생
@@ -56,3 +68,4 @@ return createNewTransaction();
 
 ref https://docs.spring.io/spring-framework/docs/4.2.x/spring-framework-reference/html/transaction.html#tx-propagation  
 ref https://www.baeldung.com/spring-transactional-propagation-isolation
+ref AbstractPlatformTransactionManager.class > handleExistingTransaction method
